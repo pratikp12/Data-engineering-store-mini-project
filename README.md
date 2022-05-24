@@ -3,7 +3,7 @@
 # Table of Content
 1. [Project Overview](#project)
 2. [Dataset Overview](#dataset)
-3. [Steps](#steps)
+3. [Exercise](#ex)
 4. [Model Choose](#model)
 
 <a name="project"></a>
@@ -41,3 +41,28 @@ This table contains the list of all the sellers:
 <li>seller_name: The seller name</li>
 <li>daily_target: The number of items (regardless of the product type) that the seller needs to hit his/her quota. For example, if the daily target is 100,000, the employee needs to sell 100,000 products he can hit the quota by selling 100,000 units of product_0, but also selling 30,000 units of product_1 and 70,000 units of product_2</li>
 </ul>
+
+<a name="ex"></a>
+## Exercise
+
+<h3>Exercise 1</h3>
+Find out how many orders, how many products and how many sellers are in the data.<br>
+How many products have been sold at least once? Which is the product contained in more orders?
+
+<h3>Exercise 2</h3>
+How many distinct products have been sold in each day?<br>
+
+<h3>Exercise 3</h3>
+What is the average revenue of the orders?<br>
+
+<h3>Exercise 4</h3>
+For each seller, what is the average % contribution of an order to the seller's daily quota?<br>
+
+<h3>Exercise 5</h3>
+Who are the <b>second most selling and the least selling</b> persons (sellers) for each product? Who are those for product with `product_id = 0`<br>
+
+<h3>Exercise 6</h3>
+Create a new column called "hashed_bill" defined as follows:<br>
+- if the order_id is even: apply MD5 hashing iteratively to the bill_raw_text field, once for each 'A' (capital 'A') present in the text. E.g. if the bill text is 'nbAAnllA', you would apply hashing three times iteratively (only if the order number is even)<br>
+- if the order_id is odd: apply SHA256 hashing to the bill text<br>
+Finally, check if there are any duplicate on the new column<br>
