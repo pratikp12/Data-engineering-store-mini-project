@@ -50,7 +50,7 @@ Find out how many orders, how many products and how many sellers are in the data
 How many products have been sold at least once? Which is the product contained in more orders?<br>
 <h4>Solutions:</h4>
 First, we simply need to count how many rows we have in every dataset:<br>
-![image](https://user-images.githubusercontent.com/17496623/170074721-883f3239-332f-4d35-b028-ba8774137902.png)
+![image](https://user-images.githubusercontent.com/17496623/170081640-243c51ac-a909-469e-a4ce-ebbfdac6ead0.png)
 
 next
 ![image](https://user-images.githubusercontent.com/17496623/170075200-ec25108f-804b-44f1-8dd2-22228288bd47.png)
