@@ -47,22 +47,44 @@ This table contains the list of all the sellers:
 
 <h3>Exercise 1</h3>
 Find out how many orders, how many products and how many sellers are in the data.<br>
-How many products have been sold at least once? Which is the product contained in more orders?
+How many products have been sold at least once? Which is the product contained in more orders?<br>
+<h4>Solutions:</h4>
+First, we simply need to count how many rows we have in every dataset:<br>
+![image](https://user-images.githubusercontent.com/17496623/170074721-883f3239-332f-4d35-b028-ba8774137902.png)
+
+next
+![image](https://user-images.githubusercontent.com/17496623/170075200-ec25108f-804b-44f1-8dd2-22228288bd47.png)
 
 <h3>Exercise 2</h3>
 How many distinct products have been sold in each day?<br>
+<h4>Solutions:</h4>
+![image](https://user-images.githubusercontent.com/17496623/170075819-ceb6d173-0f39-437a-b865-e1cf20e41557.png)
 
 <h3>Exercise 3</h3>
 What is the average revenue of the orders?<br>
+<h4>Solutions:</h4>
+![image](https://user-images.githubusercontent.com/17496623/170077224-b5faf288-d1a6-4ada-9d1b-6351d1d32d71.png)
 
 <h3>Exercise 4</h3>
 For each seller, what is the average % contribution of an order to the seller's daily quota?<br>
+<h4>Solutions:</h4>
+![image](https://user-images.githubusercontent.com/17496623/170078562-1d75f2e4-b82a-4d50-970a-9030f2aa14bb.png)
 
 <h3>Exercise 5</h3>
 Who are the <b>second most selling and the least selling</b> persons (sellers) for each product? Who are those for product with `product_id = 0`<br>
+<h4>Solutions:</h4>
+
+sample output
+![image](https://user-images.githubusercontent.com/17496623/170072334-98807e84-e67f-4291-9baa-e80561a1ef95.png)
+
+next<br>
+![image](https://user-images.githubusercontent.com/17496623/170072500-f4b3db72-08f1-4d60-8152-b479ab00b8bd.png)
+
 
 <h3>Exercise 6</h3>
 Create a new column called "hashed_bill" defined as follows:<br>
 - if the order_id is even: apply MD5 hashing iteratively to the bill_raw_text field, once for each 'A' (capital 'A') present in the text. E.g. if the bill text is 'nbAAnllA', you would apply hashing three times iteratively (only if the order number is even)<br>
 - if the order_id is odd: apply SHA256 hashing to the bill text<br>
 Finally, check if there are any duplicate on the new column<br>
+<h4>Solutions:</h4>
+
