@@ -133,6 +133,18 @@ print("Ok")
 <h3>Exercise 4</h3>
 For each seller, what is the average % contribution of an order to the seller's daily quota?<br>
 <h4>Solutions:</h4>
+<p>we can join our table with the sellers table, we calculate the percentage of the quota hit thanks to a specific order and we do the average, grouping by the seller_id.
+</p>
+<p>Again, this could generate a skewed join, since even the sellers are not evenly distributed. In this case, though, the solution is much simpler! Since the sellers table is very small, we can broadcast it, making the operations much much faster!</p>
+
+<p>“Broadcasting” simply means that a copy of the table is sent to every executor, allowing to “localize” the task. We need to use this operator carefully: when we broadcast a table, we need to be sure that this will not become too-big-to-broadcast in the future, otherwise we’ll start to have Out Of Memory errors later in time (as the broadcast dataset gets bigger).</p>
+
+```
+#   Correct way through broarcasting
+print(sales_table.join(broadcast(sellers_table), sales_table["seller_id"] == sellers_table["seller_id"], "inner").withColumn(
+    "ratio", sales_table["num_pieces_sold"]/sellers_table["daily_target"]
+).groupBy(sales_table["seller_id"]).agg(avg("ratio")).show())
+```
 
 <img src='https://user-images.githubusercontent.com/17496623/170078562-1d75f2e4-b82a-4d50-970a-9030f2aa14bb.png'>
 <h3>Exercise 5</h3>
@@ -142,7 +154,7 @@ Who are the <b>second most selling and the least selling</b> persons (sellers) f
 sample output
 ![image](https://user-images.githubusercontent.com/17496623/170072334-98807e84-e67f-4291-9baa-e80561a1ef95.png)
 
-next<br>
+<br>next<br>
 ![image](https://user-images.githubusercontent.com/17496623/170072500-f4b3db72-08f1-4d60-8152-b479ab00b8bd.png)
 
 
@@ -157,3 +169,9 @@ Finally, check if there are any duplicate on the new column<br>
 
 <a name="con"></a>
 ## Conclusion
+we learn following important Topics of Spark SQL:
+<ol>
+<li>Joins Skewness: This is usually the main pain point in Spark pipelines; sometimes it is very difficult to solve, because it’s not easy to find a balance among all the factors that are involved in these operations.</li>
+<li>Window functions: Super useful, the only thing to remember is to first define the windowing.</li>
+<li>UDFs: Although they are very helpful, we should think twice before jumping into the development of such functions, since their execution might slow down our code.</li>
+</ol>
