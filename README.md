@@ -4,7 +4,7 @@
 1. [Project Overview](#project)
 2. [Dataset Overview](#dataset)
 3. [Exercise](#ex)
-4. [Model Choose](#model)
+4. [Conclusion](#con)
 
 <a name="project"></a>
 ## Project Overview
@@ -53,13 +53,29 @@ First, we simply need to count how many rows we have in every dataset:<br>
 
 <img src='https://user-images.githubusercontent.com/17496623/170081640-243c51ac-a909-469e-a4ce-ebbfdac6ead0.png'>
 
-next<br>
-![image](https://user-images.githubusercontent.com/17496623/170075200-ec25108f-804b-44f1-8dd2-22228288bd47.png)
+As we can see, There are <b>75,000,000</b> products in our dataset and <b>20,000,040</b> orders <br>
+since each order can only have a single product, some of them have never been sold.<br>
+```
+#   Output how many products have been actually sold at least once
+print("Number of products sold at least once")
+sales_table.agg(countDistinct(col("product_id"))).show()
 
+#   Output which is the product that has been sold in more orders
+print("Product present in more orders")
+sales_table.groupBy(col("product_id")).agg(
+    count("*").alias("cnt")).orderBy(col("cnt").desc()).limit(1).show()
+```
+<p>The first query is counting how many distinct products we have in the sales table, while the second block is pulling the product_id that has the highest count in the sales table.</p>
+![image](https://user-images.githubusercontent.com/17496623/170075200-ec25108f-804b-44f1-8dd2-22228288bd47.png)
+<img src='https://user-images.githubusercontent.com/17496623/170075200-ec25108f-804b-44f1-8dd2-22228288bd47.png'>
+<p>Let’s have a closer look at the second result: 19,000,000 orders out of 20 M are selling the product with product_id = 0: this is a powerful information that we should use later!</p>
 <h3>Exercise 2</h3>
 How many distinct products have been sold in each day?<br>
 <h4>Solutions:</h4>
-
+```
+sales_table.groupby(col("date")).agg(countDistinct(col("product_id")).alias("distinct_products_sold")).orderBy(
+    col("distinct_products_sold").desc()).show()
+```
 <img src='https://user-images.githubusercontent.com/17496623/170082241-698572a3-b54a-4816-b78c-b78e55af2660.png'>
 
 <h3>Exercise 3</h3>
@@ -92,3 +108,6 @@ Finally, check if there are any duplicate on the new column<br>
 <h4>Solutions:</h4>
 
 <img src='https://user-images.githubusercontent.com/17496623/170084469-631d4133-6fcd-4808-9655-551de881aeb4.png'>
+
+<a name="con"></a>
+## Conclusion
