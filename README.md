@@ -66,9 +66,10 @@ sales_table.groupBy(col("product_id")).agg(
     count("*").alias("cnt")).orderBy(col("cnt").desc()).limit(1).show()
 ```
 <p>The first query is counting how many distinct products we have in the sales table, while the second block is pulling the product_id that has the highest count in the sales table.</p>
-![image](https://user-images.githubusercontent.com/17496623/170075200-ec25108f-804b-44f1-8dd2-22228288bd47.png)
+<! --![image](https://user-images.githubusercontent.com/17496623/170075200-ec25108f-804b-44f1-8dd2-22228288bd47.png)-->
 <img src='https://user-images.githubusercontent.com/17496623/170075200-ec25108f-804b-44f1-8dd2-22228288bd47.png'>
 <p>Let’s have a closer look at the second result: 19,000,000 orders out of 20 M are selling the product with product_id = 0: this is a powerful information that we should use later!</p>
+<a href='https://github.com/pratikp12/Data-engineering-store-mini-project/blob/main/exercise1.py'>Code</a>
 <h3>Exercise 2</h3>
 How many distinct products have been sold in each day?<br>
 <h4>Solutions:</h4>
@@ -78,7 +79,7 @@ sales_table.groupby(col("date")).agg(countDistinct(col("product_id")).alias("dis
 ```
 <br>
 <img src='https://user-images.githubusercontent.com/17496623/170082241-698572a3-b54a-4816-b78c-b78e55af2660.png'>
-
+<a href='https://github.com/pratikp12/Data-engineering-store-mini-project/blob/main/exercise2.py'>Code</a>
 <h3>Exercise 3</h3>
 What is the average revenue of the orders?<br>
 <h4>Solutions:</h4>
@@ -129,7 +130,7 @@ print("Ok")
 ```
 
 <img src='https://user-images.githubusercontent.com/17496623/170077224-b5faf288-d1a6-4ada-9d1b-6351d1d32d71.png'>
-
+<a href='https://github.com/pratikp12/Data-engineering-store-mini-project/blob/main/exercise3.py'>Code</a>
 <h3>Exercise 4</h3>
 For each seller, what is the average % contribution of an order to the seller's daily quota?<br>
 <h4>Solutions:</h4>
@@ -147,7 +148,7 @@ print(sales_table.join(broadcast(sellers_table), sales_table["seller_id"] == sel
 ```
 
 <img src='https://user-images.githubusercontent.com/17496623/170078562-1d75f2e4-b82a-4d50-970a-9030f2aa14bb.png'>
-
+<a href='https://github.com/pratikp12/Data-engineering-store-mini-project/blob/main/exercise4.py'>Code</a>
 <h3>Exercise 5</h3>
 Who are the <b>second most selling and the least selling</b> persons (sellers) for each product? Who are those for product with `product_id = 0`<br>
 <h4>Solutions:</h4>
@@ -228,7 +229,7 @@ sample output
 
 <br>next<br>
 ![image](https://user-images.githubusercontent.com/17496623/170072500-f4b3db72-08f1-4d60-8152-b479ab00b8bd.png)
-
+<a href='https://github.com/pratikp12/Data-engineering-store-mini-project/blob/main/exercise5.py'>Code</a>
 
 <h3>Exercise 6</h3>
 Create a new column called "hashed_bill" defined as follows:<br>
@@ -253,7 +254,7 @@ The UDF function implements the algorithm:<br>
 sales_table.withColumn("hashed_bill", algo_udf(col("order_id"), col("bill_raw_text")))
 ```
 <img src='https://user-images.githubusercontent.com/17496623/170084469-631d4133-6fcd-4808-9655-551de881aeb4.png'>
-
+<a href='https://github.com/pratikp12/Data-engineering-store-mini-project/blob/main/exercise6.py'>Code</a>
 <a name="con"></a>
 ## Conclusion
 we learn following important Topics of Spark SQL:
