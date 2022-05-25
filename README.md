@@ -147,12 +147,84 @@ print(sales_table.join(broadcast(sellers_table), sales_table["seller_id"] == sel
 ```
 
 <img src='https://user-images.githubusercontent.com/17496623/170078562-1d75f2e4-b82a-4d50-970a-9030f2aa14bb.png'>
+
 <h3>Exercise 5</h3>
 Who are the <b>second most selling and the least selling</b> persons (sellers) for each product? Who are those for product with `product_id = 0`<br>
 <h4>Solutions:</h4>
+<p>for each product, we need the second most selling and the least selling employees (sellers): we are probably going to need two rankings, one to get the second and the other one to get the last in the sales chart. We also need to handle some edge cases:</p>
+<ul>
+  <li>
+If a product has been sold by only one seller, we’ll put it into a special category (category: Only seller or multiple sellers with the same quantity).</li>
+<li>If a product has been sold by more than one seller, but all of them sold the same quantity, we are going to put them in the same category as if they were only a single seller for that product (category: Only seller or multiple sellers with the same quantity).</li>
+<li>If the “least selling” is also the “second selling”, we will count it only as “second seller”</li>
+  </ul>
+  Let’s draft a strategy:<br>
+  <ol>
+  <li>  We get the sum of sales for each product and seller pairs.  </li>
+  <li>We add two new ranking columns: one that ranks the products’ sales in descending order and another one that ranks in ascending order.  </li>
+  <li>We split the dataset obtained in three pieces: one for each case that we want to handle (second top selling, least selling, single selling).  </li>
+  <li>When calculating the “least selling”, we exclude those products that have a single seller and those where the least selling employee is also the second most selling  </li>
+  <li>We merge the pieces back together.  </li>
+    </ol>
+
+
+```
+#Calcuate the number of pieces sold by each seller for each product
+sales_table = sales_table.groupby(col("product_id"), col("seller_id")). \
+    agg(sum("num_pieces_sold").alias("num_pieces_sold"))
+# Create the window functions, one will sort ascending the other one descending. Partition by the product_id
+# and sort by the pieces sold
+window_desc = Window.partitionBy(col("product_id")).orderBy(col("num_pieces_sold").desc())
+window_asc = Window.partitionBy(col("product_id")).orderBy(col("num_pieces_sold").asc())
+# Create a Dense Rank (to avoid holes)
+sales_table = sales_table.withColumn("rank_asc", dense_rank().over(window_asc)). \
+    withColumn("rank_desc", dense_rank().over(window_desc))
+
+# Get products that only have one row OR the products in which multiple sellers sold the same amount
+# (i.e. all the employees that ever sold the product, sold the same exact amount)
+single_seller = sales_table.where(col("rank_asc") == col("rank_desc")).select(
+    col("product_id").alias("single_seller_product_id"), col("seller_id").alias("single_seller_seller_id"),
+    lit("Only seller or multiple sellers with the same results").alias("type")
+)
+
+# Get the second top sellers
+second_seller = sales_table.where(col("rank_desc") == 2).select(
+    col("product_id").alias("second_seller_product_id"), col("seller_id").alias("second_seller_seller_id"),
+    lit("Second top seller").alias("type")
+)
+
+# Get the least sellers and exclude those rows that are already included in the first piece
+# We also exclude the "second top sellers" that are also "least sellers"
+least_seller = sales_table.where(col("rank_asc") == 1).select(
+    col("product_id"), col("seller_id"),
+    lit("Least Seller").alias("type")
+).join(single_seller, (sales_table["seller_id"] == single_seller["single_seller_seller_id"]) & (
+        sales_table["product_id"] == single_seller["single_seller_product_id"]), "left_anti"). \
+    join(second_seller, (sales_table["seller_id"] == second_seller["second_seller_seller_id"]) & (
+        sales_table["product_id"] == second_seller["second_seller_product_id"]), "left_anti")
+
+# Union all the pieces
+union_table = least_seller.select(
+    col("product_id"),
+    col("seller_id"),
+    col("type")
+).union(second_seller.select(
+    col("second_seller_product_id").alias("product_id"),
+    col("second_seller_seller_id").alias("seller_id"),
+    col("type")
+)).union(single_seller.select(
+    col("single_seller_product_id").alias("product_id"),
+    col("single_seller_seller_id").alias("seller_id"),
+    col("type")
+))
+union_table.show()
+
+# Which are the second top seller and least seller of product 0?
+union_table.where(col("product_id") == 0).show()
+```
 
 sample output
-![image](https://user-images.githubusercontent.com/17496623/170072334-98807e84-e67f-4291-9baa-e80561a1ef95.png)
+<!--[image](https://user-images.githubusercontent.com/17496623/170072334-98807e84-e67f-4291-9baa-e80561a1ef95.png)-->
 
 <br>next<br>
 ![image](https://user-images.githubusercontent.com/17496623/170072500-f4b3db72-08f1-4d60-8152-b479ab00b8bd.png)
@@ -165,6 +237,21 @@ Create a new column called "hashed_bill" defined as follows:<br>
 Finally, check if there are any duplicate on the new column<br>
 <h4>Solutions:</h4>
 
+
+<p>First, we need to define the UDF function: def algo(order_id, bill_text). The algo function receives the order_id and the bill_text as input.</p>
+The UDF function implements the algorithm:<br>
+<ol>
+ <li>Check if the order_id is even or odd.</li>
+<li>If order_id is even, count the number of capital ‘A’ in the bill text and iteratively apply MD5</li>
+  <li>If order_id is odd, apply SHA256</li>
+  <li>Return the hashed string</li>
+  </ol>
+  <p>Afterward, this function needs to be registered in the Spark Session through the line algo_udf = spark.udf.register(“algo”, algo). The first parameter is the name of the function within the Spark context while the second parameter is the actual function that will be executed.</p>
+  We apply the UDF at the following line:<br>
+  
+```
+sales_table.withColumn("hashed_bill", algo_udf(col("order_id"), col("bill_raw_text")))
+```
 <img src='https://user-images.githubusercontent.com/17496623/170084469-631d4133-6fcd-4808-9655-551de881aeb4.png'>
 
 <a name="con"></a>
